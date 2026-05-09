@@ -26,8 +26,9 @@ models:
       v_stg_trips_with_zones:
         +materialized: table
     raw_vault:
-      +materialized: table
+      +materialized: incremental
       +schema: raw_vault
+      +on_schema_change: fail
     business_vault:
       +materialized: table
       +schema: business_vault

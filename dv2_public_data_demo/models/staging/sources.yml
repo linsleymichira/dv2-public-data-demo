@@ -37,7 +37,7 @@ sources:
     database: NYC_TAXI_ZONES                # [Needs data] verify against the mount
     schema: PUBLIC                          # [Needs data] verify
     tables:
-      - name: taxi_zones                    # [Needs data] verify
+      - name: TAXI_ZONE_GEOM                    # [Needs data] verify
         description: One row per NYC TLC taxi zone polygon.
         columns:
           - name: location_id

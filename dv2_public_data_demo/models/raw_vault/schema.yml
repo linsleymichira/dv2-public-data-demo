@@ -1,0 +1,96 @@
+version: 2
+
+models:
+  - name: hub_vendor
+    description: One row per distinct TLC vendor (`vendor_id`).
+    columns:
+      - name: vendor_pk
+        description: MD5 hash of vendor_id, the hub's primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: vendor_id
+        data_tests:
+          - not_null
+      - name: load_datetime
+        data_tests:
+          - not_null
+      - name: record_source
+        data_tests:
+          - not_null
+
+  - name: hub_pickup_zone
+    description: One row per distinct NYC TLC taxi zone.
+    columns:
+      - name: pickup_zone_pk
+        data_tests:
+          - unique
+          - not_null
+      - name: pickup_location_id
+        data_tests:
+          - not_null
+      - name: load_datetime
+        data_tests:
+          - not_null
+      - name: record_source
+        data_tests:
+          - not_null
+
+  - name: link_vendor_zone
+    description: One row per (vendor, pickup_zone) combination ever observed.
+    columns:
+      - name: link_vendor_zone_pk
+        data_tests:
+          - unique
+          - not_null
+      - name: vendor_pk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('hub_vendor')
+                field: vendor_pk
+      - name: pickup_zone_pk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('hub_pickup_zone')
+                field: pickup_zone_pk
+
+  - name: sat_vendor_details
+    description: SCD2 history of vendor descriptive attrs (`vendor_label`).
+    columns:
+      - name: vendor_pk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('hub_vendor')
+                field: vendor_pk
+      - name: vendor_hashdiff
+        data_tests:
+          - not_null
+      - name: vendor_label
+      - name: load_datetime
+        data_tests:
+          - not_null
+
+  - name: sat_zone_details
+    description: SCD2 history of zone descriptive attrs (`zone_name`, `borough`).
+    columns:
+      - name: pickup_zone_pk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('hub_pickup_zone')
+                field: pickup_zone_pk
+      - name: zone_hashdiff
+        data_tests:
+          - not_null
+      - name: zone_name
+      - name: borough
+      - name: load_datetime
+        data_tests:
+          - not_null
