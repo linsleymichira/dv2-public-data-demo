@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: v_stg_trips
+    description: 1:1 view over CARTO NYC TLC trip records, light renaming + casts.
+    columns:
+      - name: vendor_id
+        description: TLC-issued vendor identifier (business key for hub_vendor).
+        data_tests:
+          - not_null
+      - name: pickup_datetime
+        data_tests:
+          - not_null
+      - name: trip_distance_miles
+      - name: fare_amount
+      - name: tip_amount
+      - name: total_amount
+
+  - name: v_stg_zones
+    description: 1:1 view over the NYC Taxi Zones polygon listing.
+    columns:
+      - name: pickup_location_id
+        description: TLC LocationID — business key for hub_pickup_zone.
+        data_tests:
+          - not_null
+          - unique
+      - name: zone_name
+      - name: borough
+
+  - name: v_stg_trips_with_zones
+    description: >
+      Trips enriched with pickup_location_id derived via ST_CONTAINS against
+      the zone polygons. Materialized as a table so the geo-join cost is paid
+      once per build, not on every downstream query.
+    columns:
+      - name: vendor_id
+        data_tests:
+          - not_null
+      - name: pickup_location_id
+        description: >
+          May be NULL if the pickup point fell outside every NYC zone polygon
+          (depends on the coord-validity filter strategy chosen in the model).
+      - name: pickup_zone_name
+      - name: pickup_borough
