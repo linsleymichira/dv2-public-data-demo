@@ -2,10 +2,18 @@
 
 {%- set yaml_metadata -%}
 
-source_model:
-    SNOWFLAKE_PUBLIC_DATA_FREE: "IRS_FORM990_ATTRIBUTES"
+source_model: 
+  nyc_taxi_zones: "TAXI_ZONE_GEOM"
 
 derived_columns:
+
+  SOURCE: "!NYC_TAXI_ZONES"
+
+  LOAD_DATETIME: "_META_LOADED_AT"
+
+  BOROUGH: "BOROUGH"
+
+  ZONE_GEOM: "GEOM"
 
 hashed_columns:
 
@@ -15,7 +23,7 @@ hashed_columns:
 
 {{
     automate_dv.stage(
-        include_source_columns=true,       
+        include_source_columns=true,
         source_model=metadata_dict["source_model"],
         derived_columns=metadata_dict["derived_columns"],
         null_columns=none,

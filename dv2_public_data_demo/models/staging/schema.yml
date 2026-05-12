@@ -1,6 +1,31 @@
 version: 2
 
 models:
+<<<<<<< Updated upstream
+=======
+  - name: v_stg_trips
+    description: 1:1 view over CARTO NYC TLC trip records, light renaming + casts.
+    columns:
+      - name: vendor_id
+        description: TLC-issued vendor identifier (business key for hub_vendor).
+        data_tests:
+          - not_null
+      - name: pickup_datetime
+        data_tests:
+          - not_null
+      - name: trip_distance_miles
+      - name: fare_amount
+      - name: tip_amount
+      - name: total_amount
+
+  - name: v_stg_zones
+    description: 1:1 view over the NYC Taxi Zones polygon listing.
+    columns:
+      - name: pickup_location_id
+        description: TLC LocationID — business key for hub_pickup_zone.
+      - name: zone_name
+      - name: borough
+>>>>>>> Stashed changes
 
   - name: v_stg_trips_with_zones
     description: >

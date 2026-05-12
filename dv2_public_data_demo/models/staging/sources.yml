@@ -17,6 +17,7 @@ sources:
     tables:
       - name: IRS_FORM990_ATTRIBUTES   # [Needs data] verify
         description: One row per TLC-licensed taxi trip.
+<<<<<<< Updated upstream
       - name: IRS_FORM990_INDEX        # [Needs data] verify
         description: One row per taxi, with static attributes like license type and base location.
       - name: IRS_FORM990_TIMESERIES     # [Needs data] verify
@@ -25,3 +26,38 @@ sources:
         description:                    # [Needs data] verify
       - name: IRS_FORM990_INVESTMENTS     # [Needs data] verify
         description:                    # [Needs data] verify
+=======
+        columns:
+          - name: vendor_id
+          - name: pickup_datetime
+          - name: dropoff_datetime
+          - name: pickup_longitude
+          - name: pickup_latitude
+          - name: dropoff_longitude
+          - name: dropoff_latitude
+          - name: passenger_count
+          - name: trip_distance
+          - name: payment_type
+          - name: fare_amount
+          - name: tip_amount
+          - name: tolls_amount
+          - name: total_amount
+
+  - name: nyc_taxi_zones
+    description: >
+      NYC Taxi Zones polygon listing on Snowflake Marketplace (free, zero-copy mount).
+      One row per LocationID with a GEOGRAPHY polygon column for ST_CONTAINS joins.
+    database: CARTO_ACADEMY__DATA_FOR_TUTORIALS                # [Needs data] verify against the mount
+    schema: CARTO                          # [Needs data] verify
+    tables:
+      - name: TAXI_ZONE_GEOM                    # [Needs data] verify
+        description: One row per NYC TLC taxi zone polygon.
+        columns:
+          - name: location_id
+            description: TLC LocationID, the canonical zone primary key.
+          - name: zone
+            description: Human-readable zone name.
+          - name: borough
+          - name: geom
+            description: GEOGRAPHY polygon (EPSG:4326) covering the zone.
+>>>>>>> Stashed changes
