@@ -1,24 +1,5 @@
 version: 2
 
-models:
-  - name: im_vendor_zone_daily
-    description: >
-      Flat daily fact at (pickup_date, vendor, pickup_zone) grain. Joins the
-      vault's hubs + current satellite snapshots with bv_trip_metrics
-      aggregates. This is the consumption-layer model BI tools read.
-    columns:
-      - name: pickup_date
-        data_tests:
-          - not_null
-      - name: vendor_pk
-        data_tests:
-          - not_null
-      - name: pickup_zone_pk
-      - name: vendor_label
-      - name: pickup_zone_name
-      - name: pickup_borough
-      - name: trip_count
-        data_tests:
-          - not_null
-      - name: total_fare_amount
-      - name: total_tip_amount
+## Information mart model entries land in v1.0:
+##   - im_org_filing_summary: flat fact at (org, filing-year) grain, joining raw vault + BV
+models: []

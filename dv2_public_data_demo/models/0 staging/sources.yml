@@ -1,63 +1,95 @@
 version: 2
 
-## NOTE: After mounting CARTO NYC Taxi + NYC Taxi Zones from Snowflake Marketplace,
-## confirm the exact database/schema/table identifiers each listing creates and update
-## the `database`, `schema`, and `name`/`identifier` fields below.
+## Source: TPC-DS at 10 GB scale, mounted as part of every Snowflake account via
+## the SNOWFLAKE_SAMPLE_DATA share (zero-copy, no Marketplace request needed).
+##
+## The schema TPCDS_SF10 carries the standard TPC-DS retail benchmark tables.
+## We use this dataset specifically for the multi-channel retail integration
+## story: store_sales, web_sales, and catalog_sales are three independent fact
+## streams sharing customer and item dimensions, which is the textbook
+## multi-source-hub case in Data Vault 2.0.
+##
+## Source key (`name:`) is kept as SNOWFLAKE_SAMPLE_DATA so every staging file's
+## AutomateDV `source_model` dict resolves without churn if the underlying
+## scale factor changes (e.g., promoting to TPCDS_SF100GB for a denser demo).
 sources:
-  - name: SNOWFLAKE_PUBLIC_DATA_FREE
+  - name: SNOWFLAKE_SAMPLE_DATA
     description: >
-      Snowflake Public Data Free account (free, zero-copy mount). Contains the same
-      underlying data as the CARTO NYC Taxi and NYC Taxi Zones listings on Snowflake
-      Marketplace, but with different database/schema/table identifiers. If using this
-      source instead of the Marketplace listings, update the `database`, `schema`, and
-      `name`/`identifier` fields below to match those in the SNOWFLAKE_PUBLIC_DATA_FREE
-      account.
-    database: SNOWFLAKE_PUBLIC_DATA_FREE     # [Needs data] verify against the mount
-    schema: PUBLIC_DATA_FREE                          # [Needs data] verify
+      TPC-DS at 10 GB scale (SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10). Drives a
+      multi-channel retail Data Vault: three sales fact streams (store, web,
+      catalog) feed shared customer / item hubs, with RECORD_SOURCE arbitrating
+      across channels. Returns tables feed multi-active satellites; customer
+      address and demographics ride on separate satellites split by rate of
+      change.
+    database: SNOWFLAKE_SAMPLE_DATA
+    schema: TPCDS_SF10
     tables:
-      - name: IRS_FORM990_ATTRIBUTES   # [Needs data] verify
-        description: One row per TLC-licensed taxi trip.
-<<<<<<< Updated upstream
-      - name: IRS_FORM990_INDEX        # [Needs data] verify
-        description: One row per taxi, with static attributes like license type and base location.
-      - name: IRS_FORM990_TIMESERIES     # [Needs data] verify
-        description:       # [Needs data] verify
-      - name: IRS_FORM990_LOANS_AND_NOTES # [Needs data] verify
-        description:                    # [Needs data] verify
-      - name: IRS_FORM990_INVESTMENTS     # [Needs data] verify
-        description:                    # [Needs data] verify
-=======
-        columns:
-          - name: vendor_id
-          - name: pickup_datetime
-          - name: dropoff_datetime
-          - name: pickup_longitude
-          - name: pickup_latitude
-          - name: dropoff_longitude
-          - name: dropoff_latitude
-          - name: passenger_count
-          - name: trip_distance
-          - name: payment_type
-          - name: fare_amount
-          - name: tip_amount
-          - name: tolls_amount
-          - name: total_amount
+      ## ── Entities (hub-bearing) ───────────────────────────────────────────
+      - name: CUSTOMER
+        description: >
+          One row per customer. Business key `c_customer_id` feeds hub_customer.
+          Demographic foreign keys (cd_demo_sk, hd_demo_sk, ca_address_sk) feed
+          separate sats off hub_customer split by rate of change.
+      - name: CUSTOMER_ADDRESS
+        description: >
+          Address attributes. Feeds sat_customer_address (SCD2 history).
+      - name: CUSTOMER_DEMOGRAPHICS
+        description: >
+          Marital status, education, purchase estimate, credit rating, etc.
+          Feeds sat_customer_demographics — separate sat so a churny attribute
+          (purchase estimate) does not invalidate stable attrs (marital status).
+      - name: HOUSEHOLD_DEMOGRAPHICS
+        description: >
+          Household-level: income band, dependents, vehicles. Lower change rate
+          than customer demographics; own sat (sat_customer_household).
+      - name: ITEM
+        description: >
+          Product catalog. Business key `i_item_id` feeds hub_item. Sourced
+          from the same physical table in all three channels (single-source
+          for the item hub, multi-source for the customer hub).
+      - name: STORE
+        description: >
+          Physical stores. Source carries native SCD2 columns
+          (s_rec_start_date / s_rec_end_date) so sat_store_details can pass
+          them straight through as effectivity.
+      - name: PROMOTION
+        description: >
+          Promotion / campaign reference data. Joined into the link grain.
 
-  - name: nyc_taxi_zones
-    description: >
-      NYC Taxi Zones polygon listing on Snowflake Marketplace (free, zero-copy mount).
-      One row per LocationID with a GEOGRAPHY polygon column for ST_CONTAINS joins.
-    database: CARTO_ACADEMY__DATA_FOR_TUTORIALS                # [Needs data] verify against the mount
-    schema: CARTO                          # [Needs data] verify
-    tables:
-      - name: TAXI_ZONE_GEOM                    # [Needs data] verify
-        description: One row per NYC TLC taxi zone polygon.
-        columns:
-          - name: location_id
-            description: TLC LocationID, the canonical zone primary key.
-          - name: zone
-            description: Human-readable zone name.
-          - name: borough
-          - name: geom
-            description: GEOGRAPHY polygon (EPSG:4326) covering the zone.
->>>>>>> Stashed changes
+      ## ── Reference dims (NOT hubbed — pure date/time lookups) ─────────────
+      - name: DATE_DIM
+        description: >
+          Calendar dimension. Joined to sale links by d_date_sk for the
+          d_date grain. Reference data, not a hub.
+      - name: TIME_DIM
+        description: >
+          Time-of-day dimension. Joined to sale links for daypart analytics.
+          Reference data, not a hub.
+
+      ## ── Sales facts (multi-source feeders into shared hubs) ──────────────
+      - name: STORE_SALES
+        description: >
+          In-store transactions. Line grain (ss_ticket_number × ss_item_sk).
+          Feeds hub_customer + hub_item + link_sale (channel='STORE') and the
+          multi-active sat_sale_lines.
+      - name: WEB_SALES
+        description: >
+          Web/e-commerce orders. Line grain (ws_order_number × ws_item_sk).
+          Same hubs as STORE_SALES with channel='WEB' — this is where the
+          multi-source hub pattern earns its keep.
+      - name: CATALOG_SALES
+        description: >
+          Catalog / mail order. Line grain (cs_order_number × cs_item_sk).
+          Same hubs with channel='CATALOG'.
+
+      ## ── Returns (multi-active sat feeders) ───────────────────────────────
+      - name: STORE_RETURNS
+        description: >
+          Store returns. Joins back to STORE_SALES on (ticket_number, item_sk).
+          Feeds the multi-active returns satellite.
+      - name: WEB_RETURNS
+        description: >
+          Web returns. Same pattern.
+      - name: CATALOG_RETURNS
+        description: >
+          Catalog returns. Same pattern.
