@@ -1,28 +1,4 @@
 version: 2
 
 models:
-  - name: bv_trip_metrics
-    description: >
-      Per-trip derived metrics (tip_pct, fare_per_mile, is_peak_hour, is_long_trip).
-      Computed once and reused by every downstream consumer.
-    columns:
-      - name: vendor_pk
-        data_tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('hub_vendor')
-                field: vendor_pk
-      - name: pickup_zone_pk
-        data_tests:
-          - relationships:
-              arguments:
-                to: ref('hub_pickup_zone')
-                field: pickup_zone_pk
-      - name: pickup_datetime
-        data_tests:
-          - not_null
-      - name: tip_pct
-      - name: fare_per_mile
-      - name: is_peak_hour
-      - name: is_long_trip
+  - name: 

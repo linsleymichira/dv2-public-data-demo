@@ -4,46 +4,24 @@ version: 2
 ## confirm the exact database/schema/table identifiers each listing creates and update
 ## the `database`, `schema`, and `name`/`identifier` fields below.
 sources:
-  - name: carto_nyc_taxi
+  - name: SNOWFLAKE_PUBLIC_DATA_FREE
     description: >
-      CARTO NYC Taxi listing on Snowflake Marketplace (2014–2015 TLC trip records,
-      free, zero-copy mount). Trips carry lat/long but no LocationID — pickup_location_id
-      is derived in `v_stg_trips_with_zones` via a point-in-polygon join.
-    database: CARTO_NYC_TAXI                # [Needs data] verify against the mount
-    schema: PUBLIC                          # [Needs data] verify
+      Snowflake Public Data Free account (free, zero-copy mount). Contains the same
+      underlying data as the CARTO NYC Taxi and NYC Taxi Zones listings on Snowflake
+      Marketplace, but with different database/schema/table identifiers. If using this
+      source instead of the Marketplace listings, update the `database`, `schema`, and
+      `name`/`identifier` fields below to match those in the SNOWFLAKE_PUBLIC_DATA_FREE
+      account.
+    database: SNOWFLAKE_PUBLIC_DATA_FREE     # [Needs data] verify against the mount
+    schema: PUBLIC_DATA_FREE                          # [Needs data] verify
     tables:
-      - name: tlc_trip_records              # [Needs data] verify
+      - name: IRS_FORM990_ATTRIBUTES   # [Needs data] verify
         description: One row per TLC-licensed taxi trip.
-        columns:
-          - name: vendor_id
-          - name: pickup_datetime
-          - name: dropoff_datetime
-          - name: pickup_longitude
-          - name: pickup_latitude
-          - name: dropoff_longitude
-          - name: dropoff_latitude
-          - name: passenger_count
-          - name: trip_distance
-          - name: payment_type
-          - name: fare_amount
-          - name: tip_amount
-          - name: tolls_amount
-          - name: total_amount
-
-  - name: nyc_taxi_zones
-    description: >
-      NYC Taxi Zones polygon listing on Snowflake Marketplace (free, zero-copy mount).
-      One row per LocationID with a GEOGRAPHY polygon column for ST_CONTAINS joins.
-    database: NYC_TAXI_ZONES                # [Needs data] verify against the mount
-    schema: PUBLIC                          # [Needs data] verify
-    tables:
-      - name: TAXI_ZONE_GEOM                    # [Needs data] verify
-        description: One row per NYC TLC taxi zone polygon.
-        columns:
-          - name: location_id
-            description: TLC LocationID, the canonical zone primary key.
-          - name: zone
-            description: Human-readable zone name.
-          - name: borough
-          - name: geom
-            description: GEOGRAPHY polygon (EPSG:4326) covering the zone.
+      - name: IRS_FORM990_INDEX        # [Needs data] verify
+        description: One row per taxi, with static attributes like license type and base location.
+      - name: IRS_FORM990_TIMESERIES     # [Needs data] verify
+        description:       # [Needs data] verify
+      - name: IRS_FORM990_LOANS_AND_NOTES # [Needs data] verify
+        description:                    # [Needs data] verify
+      - name: IRS_FORM990_INVESTMENTS     # [Needs data] verify
+        description:                    # [Needs data] verify
