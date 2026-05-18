@@ -23,8 +23,6 @@ models:
     staging:
       +materialized: view
       +schema: staging
-      v_stg_trips_with_zones:
-        +materialized: table
     raw_vault:
       +materialized: incremental
       +schema: raw_vault

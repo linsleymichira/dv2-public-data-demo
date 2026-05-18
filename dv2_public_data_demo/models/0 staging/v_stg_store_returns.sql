@@ -1,42 +1,42 @@
 {%- set yaml_metadata -%}
 
-source_model:
-
-    SNOWFLAKE_SAMPLE_DATA: STORE
+source_model: pre_stg_store_returns
 
 hashed_columns:
 
+  CUSTOMER_HK: "C_CUSTOMER_ID"
+
+  ITEM_HK: "I_ITEM_ID"
+
   STORE_HK: "S_STORE_ID"
 
-  MARKET_HK: "S_MARKET_ID"
+  RETURNS_HK:
+    - "SR_TICKET_NUMBER"
+    - "SR_RETURNED_DATE_SK"
+    - "SR_ITEM_SK"
 
-  DIVISION_HK: "S_DIVISION_ID"
-
-  STORE_HASHDIFF:
-    is_hashdiff: true
-    columns:
-      - "S_STORE_NAME"
-      - "S_COMPANY_NAME"
-      - "S_CITY"
-      - "S_STATE"
-      - "S_ZIP"
-      - "S_COUNTRY"
-      - "S_MANAGER"
-      - "S_MARKET_MANAGER"
+  LINK_RETURN_HK:
+    - "C_CUSTOMER_ID"
+    - "I_ITEM_ID"
+    - "S_STORE_ID"
+    - "SR_TICKET_NUMBER"
+    - "SR_RETURNED_DATE_SK"
+    - "SR_ITEM_SK"
 
 derived_columns:
 
-  RECORD_SOURCE: "!1"
-
-  EFFCTIVE_FROM: "S_REC_START_DATE"
-
-  EFFCTIVE_TO: "S_REC_END_DATE"
+  RECORD_SOURCE: "!STORE_RETURNS"
 
 null_columns:
 
-  required: 
+  required:
+    - C_CUSTOMER_ID
+    - I_ITEM_ID
     - S_STORE_ID
- 
+    - SR_TICKET_NUMBER
+    - SR_RETURNED_DATE_SK
+    - SR_ITEM_SK
+
 ranked_columns:
 
 
@@ -56,4 +56,3 @@ ranked_columns:
                      null_columns=null_columns,
                      hashed_columns=hashed_columns,
                      ranked_columns=ranked_columns) }}
-                     

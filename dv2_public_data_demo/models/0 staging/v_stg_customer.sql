@@ -8,6 +8,16 @@ hashed_columns:
 
   CUSTOMER_HK: "C_CUSTOMER_ID"
 
+  CUSTOMER_HASHDIFF:
+    is_hashdiff: true
+    columns:
+      - "C_FIRST_NAME"
+      - "C_LAST_NAME"
+      - "C_SALUTATION"
+      - "C_EMAIL_ADDRESS"
+      - "C_BIRTH_YEAR"
+      - "C_PREFERRED_CUST_FLAG"
+
 derived_columns:
 
   RECORD_SOURCE: "!1"

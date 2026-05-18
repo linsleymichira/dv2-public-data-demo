@@ -2,41 +2,35 @@
 
 source_model:
 
-    SNOWFLAKE_SAMPLE_DATA: STORE
+    SNOWFLAKE_SAMPLE_DATA: ITEM
 
 hashed_columns:
 
-  STORE_HK: "S_STORE_ID"
+  ITEM_HK: "I_ITEM_ID"
 
-  MARKET_HK: "S_MARKET_ID"
-
-  DIVISION_HK: "S_DIVISION_ID"
-
-  STORE_HASHDIFF:
+  ITEM_HASHDIFF:
     is_hashdiff: true
     columns:
-      - "S_STORE_NAME"
-      - "S_COMPANY_NAME"
-      - "S_CITY"
-      - "S_STATE"
-      - "S_ZIP"
-      - "S_COUNTRY"
-      - "S_MANAGER"
-      - "S_MARKET_MANAGER"
+      - "I_PRODUCT_NAME"
+      - "I_BRAND"
+      - "I_CLASS"
+      - "I_CATEGORY"
+      - "I_MANUFACT"
+      - "I_SIZE"
+      - "I_COLOR"
+      - "I_UNITS"
+      - "I_CURRENT_PRICE"
+      - "I_WHOLESALE_COST"
 
 derived_columns:
 
-  RECORD_SOURCE: "!1"
-
-  EFFCTIVE_FROM: "S_REC_START_DATE"
-
-  EFFCTIVE_TO: "S_REC_END_DATE"
+  RECORD_SOURCE: "!ITEM"
 
 null_columns:
 
-  required: 
-    - S_STORE_ID
- 
+  required:
+    - I_ITEM_ID
+
 ranked_columns:
 
 
@@ -56,4 +50,3 @@ ranked_columns:
                      null_columns=null_columns,
                      hashed_columns=hashed_columns,
                      ranked_columns=ranked_columns) }}
-                     
