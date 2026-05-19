@@ -86,3 +86,8 @@ Pinned in `packages.yml`:
 - `Snowflake-Labs/dbt_semantic_view` 1.0.3
 
 Bumping AutomateDV is the highest-risk dep change — macro signatures shift between minor versions.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
