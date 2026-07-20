@@ -7,3 +7,14 @@ models:
 
   ## ── Hubs ──────────────────────────────────────────────────────────────────
   
+- name: h_customer
+  description: "Hub for customer entities, capturing the unique business key and metadata for each customer."
+  columns:
+    - name: hk_customer
+      description: "Hash key for the customer, generated from the business key."
+    - name: customer_id
+      description: "Unique identifier for each customer (business key)."
+    - name: load_date
+      description: "Timestamp when the record was loaded into the raw vault."
+    - name: record_source
+      description: "Source system of the record."

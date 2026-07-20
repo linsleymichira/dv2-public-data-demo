@@ -5,3 +5,19 @@ version: 2
 ## form_type discriminator on the index view, the form-type-aware coalesced columns
 ## on the attributes view, and the AutomateDV-generated hash columns on all five.
 models:
+
+- name: v_stg_customer
+  description: "Staging view for customer data, sourced from the raw layer and transformed for consistency and ease of use in downstream models."
+  columns:
+    - name: customer_id
+      description: "Unique identifier for each customer."
+    - name: first_name
+      description: "Customer's first name."
+    - name: last_name
+      description: "Customer's last name."
+    - name: email
+      description: "Customer's email address."
+    - name: created_at
+      description: "Timestamp when the customer record was created."
+    - name: updated_at
+      description: "Timestamp when the customer record was last updated."
