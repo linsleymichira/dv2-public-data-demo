@@ -1,0 +1,6 @@
+version: 2
+
+## Business vault model entries land in v1.0 / v1.1:
+##   - bv_filing_metrics: program_expense_ratio, fundraising_efficiency, admin_overhead_pct
+##   - bv_org_trajectory: yoy_revenue_growth, rolling 3-year averages (sourced from time_series)
+models: []

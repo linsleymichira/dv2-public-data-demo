@@ -1,0 +1,17 @@
+## Copy this file to ~/.dbt/profiles.yml and fill in real Snowflake credentials.
+## Never commit ~/.dbt/profiles.yml — it carries your account password / key.
+
+dv2_public_data_demo:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: <your_snowflake_account_locator>      ## e.g. ab12345.us-east-1
+      user: <your_snowflake_user>
+      password: <your_snowflake_password>            ## or use private_key_path for keypair auth
+      role: DBT_ROLE
+      warehouse: DBT_WH
+      database: DV2_DEMO
+      schema: DEV                                    ## prefix; layer-specific schemas come from dbt_project.yml
+      threads: 4
+      client_session_keep_alive: false

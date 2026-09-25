@@ -1,0 +1,5 @@
+version: 2
+
+## Information mart model entries land in v1.0:
+##   - im_org_filing_summary: flat fact at (org, filing-year) grain, joining raw vault + BV
+models: []

@@ -1,26 +1,39 @@
-## Project
-name: tasty_bytes
-version: "1.0"
+name: dv2_public_data_demo
+version: "1.0.0"
 config-version: 2
-profile: tasty_bytes
 
-## Sources
+profile: dv2_public_data_demo
+
 model-paths: [models]
-analysis-paths: [analysis]
-test-paths: [tests]
 seed-paths: [seeds]
+test-paths: [tests]
+analysis-paths: [analyses]
 macro-paths: [macros]
 snapshot-paths: [snapshots]
 
-## Target
 target-path: target
-clean-targets: [target, dbt_modules]
+clean-targets: [target, dbt_packages, logs]
 
-## Models
+vars:
+  hash: 'MD5'
+  load_datetime_col_type: 'TIMESTAMP'
+
 models:
-  tasty_bytes:
+  dv2_public_data_demo:
     staging:
       +materialized: view
-    marts:
+      +schema: staging
+    raw_vault:
+      +materialized: incremental
+      +schema: raw_vault
+      +on_schema_change: fail
+    business_vault:
       +materialized: table
-      
+      +schema: business_vault
+    information_mart:
+      +materialized: table
+      +schema: information_mart
+
+flags:
+  require_generic_test_arguments_property: true
+  source_freshness_run_project_hooks: true
